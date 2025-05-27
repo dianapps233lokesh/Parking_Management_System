@@ -3,3 +3,6 @@ string
 time
 math
 typing
+setuptools
+
+# -e .
