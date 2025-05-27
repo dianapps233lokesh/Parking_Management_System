@@ -92,4 +92,4 @@ Created by Lokesh Kumar Saini
 
 ## 📄 License
 
-MIT License
+General Public License
