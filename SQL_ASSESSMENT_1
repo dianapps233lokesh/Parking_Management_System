@@ -1,0 +1,101 @@
+select * from salaries limit 10;
+
+select count(*) from salaries;
+
+select count(distinct emp_no) from salaries;
+
+select count(emp_no) from employees;
+
+select * from salaries where emp_no in (select emp_no from salaries group by emp_no having count(*)>1 limit 5);
+
+
+
+-- 1. date  wise total salary
+
+select from_date,sum(salary) from salaries group by from_date; 
+
+--2.  Department name and their total salary
+
+select dp.dept_name, sum(s.salary) "Department total salary" 
+from dept_emp "d" join salaries "s" on d.emp_no=s.emp_no 
+join departments "dp" on dp.dept_no=d.dept_no
+group by dp.dept_name; 
+
+select * from departments;
+
+-- 3. department with highest salary
+
+select dp.dept_name , sum(s.salary) "Department total salary" 
+from dept_emp "d" join salaries "s" on d.emp_no=s.emp_no 
+join departments "dp" on dp.dept_no=d.dept_no
+group by dp.dept_name
+order by sum(s.salary) desc
+limit 1; 
+
+-- 4. Employee with highest salary
+
+select concat(e.first_name,' ',e.last_name) "Employee full name", max(s.salary) "Employee salary"
+from employees "e" inner join salaries "s" 
+on e.emp_no=s.emp_no
+group by e.emp_no
+order by max(s.salary) desc
+limit 1;
+
+select * from employees where emp_no=43624;
+
+
+-- 5. employee with 10th highest salary
+
+with cte as (
+select *,dense_rank() over(order by salary desc) "salary rank" from salaries
+)
+select concat(e.first_name,' ',e.last_name),cte.salary 
+from employees "e" inner join cte
+on e.emp_no=cte.emp_no
+where cte."salary rank"=10;
+
+
+-- 6. show employee id with their title, dept_name, dept_id
+
+select distinct t.emp_no,t.title,d.dept_no,dp.dept_name 
+from titles "t" join dept_emp "d"
+on t.emp_no=d.emp_no
+join departments "dp"
+on dp.dept_no=d.dept_no;
+
+-- 7. employee total salary till now
+
+select emp_no,sum(salary) from salaries
+group by emp_no;
+
+-- 8. male total salary and female total salary
+
+select e.gender, sum(s.salary) 
+from employees "e" join salaries "s"
+on e.emp_no=s.emp_no
+group by e.gender;
+
+
+--9. no. of employees hired per date
+
+select * from employees limit 10;
+
+select hire_date,count(distinct emp_no) "no. of employees hired per date"
+from employees
+group by hire_date;
+
+
+-- 10. test delete with cascade (in case of on delete cascading, if we delete any row from parent table, matching rows will be automatically deleted from child table)
+
+select * from employees where emp_no=10001;
+
+select * from dept_emp where emp_no=10001;
+
+delete from employees where emp_no=10001;
+
+
+-- 11 insertion into tables
+
+insert into employees values (88745964,'2003-05-01','lokesh','saini','M','2025-05-12');
+
+select * from employees where emp_no=88745964;
